@@ -19,7 +19,7 @@ import { openLibraryService } from "../../services/openLibraryApi";
 import { Book, Note } from "../../types/book";
 
 export default function BookDetailsScreen() {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const { bookId } = useLocalSearchParams();
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
@@ -192,155 +192,282 @@ export default function BookDetailsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007AFF" />
+      <View style={[styles.centered, { backgroundColor: theme.surface }]}>
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
 
   if (error || !book) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{error || "Livre introuvable"}</Text>
+      <View style={[styles.centered, { backgroundColor: theme.surface }]}>
+        <Text style={[styles.errorText, { color: theme.error }]}>
+          {error || "Livre introuvable"}
+        </Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.surface }]}>
       {book.cover && (
-        <Image source={{ uri: book.cover }} style={styles.coverHeader} />
+        <View style={styles.coverContainer}>
+          <Image source={{ uri: book.cover }} style={styles.coverHeader} />
+          <View style={styles.coverOverlay} />
+        </View>
       )}
 
       <View style={styles.content}>
-        <View style={styles.titleSection}>
-          <Text style={styles.title}>{book.name}</Text>
-          <TouchableOpacity
-            style={styles.favoriteButton}
-            onPress={handleToggleFavorite}
-          >
-            <FontAwesome
-              name={book.favorite ? "heart" : "heart-o"}
-              size={24}
-              color={book.favorite ? "#e91e63" : "#999"}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Auteur</Text>
-          <Text style={styles.value}>{book.author}</Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.label}>Éditeur</Text>
-          <Text style={styles.value}>{book.editor}</Text>
-        </View>
-
-        <View style={styles.rowSection}>
-          <View style={styles.halfSection}>
-            <Text style={styles.label}>Année</Text>
-            <Text style={styles.value}>{book.year}</Text>
+        {/* Header avec titre et badges */}
+        <View
+          style={[
+            styles.headerCard,
+            {
+              backgroundColor: theme.surfaceSecondary,
+              shadowColor: theme.text,
+            },
+          ]}
+        >
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, { color: theme.text }]}>
+              {book.name}
+            </Text>
+            <TouchableOpacity
+              style={styles.favoriteButton}
+              onPress={handleToggleFavorite}
+            >
+              <FontAwesome
+                name={book.favorite ? "heart" : "heart-o"}
+                size={28}
+                color={book.favorite ? theme.favorite : theme.placeholder}
+              />
+            </TouchableOpacity>
           </View>
-          <View style={styles.halfSection}>
-            <Text style={styles.label}>Thème</Text>
-            <Text style={styles.value}>{book.theme}</Text>
-          </View>
-        </View>
 
-        <View style={styles.rowSection}>
-          <View style={styles.halfSection}>
-            <Text style={styles.label}>Note</Text>
-            <View style={styles.ratingSection}>
-              <StarRating rating={book.rating} size={16} />
-              <Text style={styles.ratingValue}>{book.rating}/5</Text>
-            </View>
-          </View>
-          <View style={styles.halfSection}>
-            <Text style={styles.label}>Statut</Text>
-            <Text
+          <Text style={[styles.author, { color: theme.textSecondary }]}>
+            {book.author}
+          </Text>
+
+          {/* Badges */}
+          <View style={styles.badgesRow}>
+            <View
               style={[
-                styles.value,
-                { color: book.read ? "#4caf50" : "#f44336" },
+                styles.badge,
+                { backgroundColor: book.read ? theme.success : theme.warning },
               ]}
             >
-              {book.read ? "Lu" : "Non lu"}
+              <FontAwesome
+                name={book.read ? "check-circle" : "circle-o"}
+                size={14}
+                color="#fff"
+              />
+              <Text style={styles.badgeText}>
+                {book.read ? "Lu" : "Non lu"}
+              </Text>
+            </View>
+
+            <View
+              style={[styles.badge, { backgroundColor: theme.borderLight }]}
+            >
+              <FontAwesome name="book" size={14} color={theme.textSecondary} />
+              <Text
+                style={[styles.badgeTextDark, { color: theme.textSecondary }]}
+              >
+                {book.theme}
+              </Text>
+            </View>
+          </View>
+
+          {/* Note */}
+          <View style={styles.ratingContainer}>
+            <StarRating rating={book.rating} size={24} />
+            <Text style={[styles.ratingText, { color: theme.text }]}>
+              {book.rating}/5
             </Text>
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Nombre d'éditions référencées</Text>
-          {loadingEditions ? (
-            <ActivityIndicator size="small" color="#007AFF" />
-          ) : editionCount !== null ? (
-            <Text style={styles.value}>{editionCount}</Text>
-          ) : (
-            <Text style={styles.value}>Non disponible</Text>
-          )}
-        </View>
+        {/* Informations détaillées */}
+        <View
+          style={[
+            styles.infoCard,
+            {
+              backgroundColor: theme.surfaceSecondary,
+              shadowColor: theme.text,
+            },
+          ]}
+        >
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            Informations
+          </Text>
 
-        <View style={styles.actionsSection}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.readButton]}
-            onPress={handleToggleRead}
+          <View
+            style={[styles.infoRow, { borderBottomColor: theme.borderLight }]}
           >
             <FontAwesome
-              name={book.read ? "check-circle" : "circle-o"}
-              size={20}
-              color="#fff"
+              name="building-o"
+              size={16}
+              color={theme.textSecondary}
             />
-            <Text style={styles.actionButtonText}>
-              {book.read ? "Marquer comme non lu" : "Marquer comme lu"}
-            </Text>
-          </TouchableOpacity>
+            <View style={styles.infoContent}>
+              <Text style={[styles.infoLabel, { color: theme.textTertiary }]}>
+                Éditeur
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {book.editor}
+              </Text>
+            </View>
+          </View>
 
-          <TouchableOpacity
-            style={[styles.actionButton, styles.editButton]}
-            onPress={handleEdit}
+          <View
+            style={[styles.infoRow, { borderBottomColor: theme.borderLight }]}
           >
-            <FontAwesome name="pencil" size={20} color="#fff" />
-            <Text style={styles.actionButtonText}>Modifier</Text>
-          </TouchableOpacity>
+            <FontAwesome
+              name="calendar"
+              size={16}
+              color={theme.textSecondary}
+            />
+            <View style={styles.infoContent}>
+              <Text style={[styles.infoLabel, { color: theme.textTertiary }]}>
+                Année de publication
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {book.year}
+              </Text>
+            </View>
+          </View>
 
-          <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
-            onPress={handleDelete}
+          <View
+            style={[styles.infoRow, { borderBottomColor: theme.borderLight }]}
           >
-            <FontAwesome name="trash" size={20} color="#fff" />
-            <Text style={styles.actionButtonText}>Supprimer</Text>
-          </TouchableOpacity>
+            <FontAwesome name="globe" size={16} color={theme.textSecondary} />
+            <View style={styles.infoContent}>
+              <Text style={[styles.infoLabel, { color: theme.textTertiary }]}>
+                Éditions référencées
+              </Text>
+              {loadingEditions ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : editionCount !== null ? (
+                <Text style={[styles.infoValue, { color: theme.text }]}>
+                  {editionCount}
+                </Text>
+              ) : (
+                <Text style={[styles.infoValue, { color: theme.text }]}>
+                  Non disponible
+                </Text>
+              )}
+            </View>
+          </View>
         </View>
 
-        <View style={styles.notesSection}>
-          <Text style={styles.notesTitle}>Commentaires ({notes.length})</Text>
+        {/* Actions rapides */}
+        <View style={styles.actionsCard}>
+          <View style={styles.actionsRow}>
+            <TouchableOpacity
+              style={[
+                styles.actionButtonCompact,
+                { backgroundColor: theme.success },
+              ]}
+              onPress={handleToggleRead}
+            >
+              <FontAwesome
+                name={book.read ? "check-circle" : "circle-o"}
+                size={18}
+                color="#fff"
+              />
+              <Text style={styles.actionButtonCompactText}>
+                {book.read ? "Non lu" : "Lu"}
+              </Text>
+            </TouchableOpacity>
 
-          {notes.length > 0 ? (
+            <TouchableOpacity
+              style={[
+                styles.actionButtonCompact,
+                { backgroundColor: theme.primary },
+              ]}
+              onPress={handleEdit}
+            >
+              <FontAwesome name="pencil" size={18} color="#fff" />
+              <Text style={styles.actionButtonCompactText}>Modifier</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.actionButtonCompact,
+                { backgroundColor: theme.error },
+              ]}
+              onPress={handleDelete}
+            >
+              <FontAwesome name="trash" size={18} color="#fff" />
+              <Text style={styles.actionButtonCompactText}>Supprimer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Section commentaires */}
+        <View
+          style={[
+            styles.notesCard,
+            {
+              backgroundColor: theme.surfaceSecondary,
+              shadowColor: theme.text,
+            },
+          ]}
+        >
+          <View style={styles.notesTitleRow}>
+            <FontAwesome name="comment-o" size={20} color={theme.text} />
+            <Text style={[styles.notesTitle, { color: theme.text }]}>
+              Commentaires ({notes.length})
+            </Text>
+          </View>
+
+          {notes.length > 0 && (
             <View style={styles.notesList}>
               {notes.map((note) => (
-                <View key={note.id} style={styles.noteItem}>
-                  <Text style={styles.noteContent}>{note.content}</Text>
+                <View
+                  key={note.id}
+                  style={[
+                    styles.noteItem,
+                    {
+                      backgroundColor: theme.surface,
+                      borderLeftColor: theme.primary,
+                    },
+                  ]}
+                >
+                  <View style={styles.noteHeader}>
+                    <FontAwesome
+                      name="quote-left"
+                      size={12}
+                      color={theme.textTertiary}
+                    />
+                  </View>
+                  <Text style={[styles.noteContent, { color: theme.text }]}>
+                    {note.content}
+                  </Text>
                   <TouchableOpacity
                     style={styles.deleteNoteButton}
                     onPress={() => handleDeleteNote(note.id)}
                   >
-                    <FontAwesome name="trash-o" size={16} color="#d32f2f" />
+                    <FontAwesome name="trash-o" size={16} color={theme.error} />
                   </TouchableOpacity>
                 </View>
               ))}
             </View>
-          ) : (
-            <Text style={styles.noNotesText}>
-              Aucun commentaire pour le moment
-            </Text>
           )}
 
           {showNoteForm ? (
-            <View style={styles.noteForm}>
+            <View style={[styles.noteForm, { backgroundColor: theme.surface }]}>
               <TextInput
-                style={styles.noteInput}
-                placeholder="Ajouter un commentaire..."
-                placeholderTextColor="#999"
+                style={[
+                  styles.noteInput,
+                  {
+                    backgroundColor: theme.surfaceSecondary,
+                    borderColor: theme.border,
+                    color: theme.text,
+                  },
+                ]}
+                placeholder="Écrivez votre commentaire..."
+                placeholderTextColor={theme.placeholder}
                 value={noteContent}
                 onChangeText={setNoteContent}
                 multiline
@@ -348,17 +475,31 @@ export default function BookDetailsScreen() {
               />
               <View style={styles.noteFormButtons}>
                 <TouchableOpacity
-                  style={[styles.formButton, styles.cancelButton]}
+                  style={[
+                    styles.formButton,
+                    styles.cancelButton,
+                    { backgroundColor: theme.borderLight },
+                  ]}
                   onPress={() => {
                     setShowNoteForm(false);
                     setNoteContent("");
                   }}
                   disabled={addingNote}
                 >
-                  <Text style={styles.formButtonText}>Annuler</Text>
+                  <Text
+                    style={[
+                      styles.cancelButtonText,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    Annuler
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.formButton, styles.submitButton]}
+                  style={[
+                    styles.formButton,
+                    { backgroundColor: theme.primary },
+                  ]}
                   onPress={handleAddNote}
                   disabled={addingNote}
                 >
@@ -372,11 +513,13 @@ export default function BookDetailsScreen() {
             </View>
           ) : (
             <TouchableOpacity
-              style={styles.addNoteButton}
+              style={[styles.addNoteButton, { borderColor: theme.primary }]}
               onPress={() => setShowNoteForm(true)}
             >
-              <FontAwesome name="plus" size={18} color="#fff" />
-              <Text style={styles.addNoteButtonText}>
+              <FontAwesome name="plus-circle" size={20} color={theme.primary} />
+              <Text
+                style={[styles.addNoteButtonText, { color: theme.primary }]}
+              >
                 Ajouter un commentaire
               </Text>
             </TouchableOpacity>
@@ -390,7 +533,6 @@ export default function BookDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
   centered: {
     flex: 1,
@@ -399,153 +541,204 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   errorText: {
-    color: "#d32f2f",
     fontSize: 16,
+  },
+  coverContainer: {
+    position: "relative",
+    width: "100%",
+    height: 250,
   },
   coverHeader: {
     width: "100%",
-    height: 200,
+    height: 250,
     resizeMode: "cover",
+  },
+  coverOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 100,
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   content: {
     padding: 16,
     paddingBottom: 32,
+    marginTop: -40,
   },
-  titleSection: {
+  headerCard: {
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
+    alignItems: "flex-start",
+    marginBottom: 8,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    color: "#333",
     flex: 1,
+    paddingRight: 12,
+  },
+  author: {
+    fontSize: 18,
+    marginBottom: 16,
+    fontStyle: "italic",
   },
   favoriteButton: {
-    padding: 8,
+    padding: 4,
   },
-  section: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  rowSection: {
+  badgesRow: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 12,
+    gap: 8,
+    marginBottom: 16,
+    flexWrap: "wrap",
   },
-  halfSection: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-  },
-  label: {
-    fontSize: 12,
-    color: "#999",
-    textTransform: "uppercase",
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  value: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "500",
-  },
-  ratingSection: {
+  badge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
   },
-  ratingValue: {
-    fontSize: 14,
-    color: "#666",
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  badgeTextDark: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingTop: 8,
+  },
+  ratingText: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  infoCard: {
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    gap: 12,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  infoValue: {
+    fontSize: 16,
     fontWeight: "500",
   },
-  actionsSection: {
-    marginTop: 24,
-    gap: 12,
-    marginBottom: 24,
+  actionsCard: {
+    marginBottom: 16,
   },
-  actionButton: {
+  actionsRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  actionButtonCompact: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 16,
-    borderRadius: 8,
-    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    gap: 6,
   },
-  readButton: {
-    backgroundColor: "#4caf50",
-  },
-  editButton: {
-    backgroundColor: "#007AFF",
-  },
-  deleteButton: {
-    backgroundColor: "#d32f2f",
-  },
-  actionButtonText: {
+  actionButtonCompactText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 13,
+    fontWeight: "600",
   },
-  notesSection: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
+  notesCard: {
+    padding: 20,
+    borderRadius: 16,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  notesTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 16,
   },
   notesTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
-    marginBottom: 16,
   },
   notesList: {
     marginBottom: 16,
     gap: 12,
   },
   noteItem: {
-    backgroundColor: "#f9f9f9",
-    padding: 12,
-    borderRadius: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    padding: 16,
+    borderRadius: 12,
+    borderLeftWidth: 3,
+    position: "relative",
+  },
+  noteHeader: {
+    position: "absolute",
+    top: 12,
+    left: 12,
   },
   noteContent: {
-    flex: 1,
-    fontSize: 14,
-    color: "#333",
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
+    paddingLeft: 24,
+    paddingRight: 32,
   },
   deleteNoteButton: {
+    position: "absolute",
+    top: 12,
+    right: 12,
     padding: 8,
-    marginLeft: 8,
-  },
-  noNotesText: {
-    fontSize: 14,
-    color: "#999",
-    fontStyle: "italic",
-    marginBottom: 16,
-    textAlign: "center",
   },
   noteForm: {
-    backgroundColor: "#f9f9f9",
-    padding: 12,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 12,
     gap: 12,
+    marginTop: 8,
   },
   noteInput: {
     borderWidth: 1,
-    borderColor: "#ddd",
     borderRadius: 8,
     padding: 12,
-    fontSize: 14,
-    color: "#333",
-    minHeight: 80,
+    fontSize: 15,
+    minHeight: 100,
     textAlignVertical: "top",
   },
   noteFormButtons: {
@@ -554,34 +747,35 @@ const styles = StyleSheet.create({
   },
   formButton: {
     flex: 1,
-    padding: 12,
+    padding: 14,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
   },
-  cancelButton: {
-    backgroundColor: "#ddd",
-  },
-  submitButton: {
-    backgroundColor: "#007AFF",
+  cancelButton: {},
+  cancelButtonText: {
+    fontSize: 15,
+    fontWeight: "600",
   },
   formButtonText: {
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 15,
+    fontWeight: "600",
     color: "#fff",
   },
   addNoteButton: {
-    backgroundColor: "#007AFF",
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: "transparent",
+    borderWidth: 2,
+    borderStyle: "dashed",
+    padding: 14,
+    borderRadius: 12,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     gap: 8,
+    marginTop: 8,
   },
   addNoteButtonText: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 15,
+    fontWeight: "600",
   },
 });
