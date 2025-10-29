@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type FilterType = "all" | "read" | "unread" | "favorite";
 type SortType = "title" | "author" | "theme";
@@ -25,6 +26,7 @@ export default function FiltersAndSort({
   activeFilter = "all",
   activeSort,
 }: FiltersAndSortProps) {
+  const theme = useTheme();
   const [showSortMenu, setShowSortMenu] = useState(false);
 
   const filters: {
@@ -45,7 +47,15 @@ export default function FiltersAndSort({
   ];
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.theme.surface,
+          borderBottomColor: theme.theme.border,
+        },
+      ]}
+    >
       {/* Filters */}
       <View style={styles.filtersSection}>
         <ScrollView
@@ -58,19 +68,31 @@ export default function FiltersAndSort({
               key={filter.type}
               style={[
                 styles.filterButton,
-                activeFilter === filter.type && styles.filterButtonActive,
+                { borderColor: theme.theme.primary },
+                activeFilter === filter.type && {
+                  backgroundColor: theme.theme.primary,
+                },
               ]}
               onPress={() => onFilter(filter.type)}
             >
               <FontAwesome
                 name={filter.icon}
                 size={16}
-                color={activeFilter === filter.type ? "#fff" : "#007AFF"}
+                color={
+                  activeFilter === filter.type
+                    ? theme.theme.surface
+                    : theme.theme.primary
+                }
               />
               <Text
                 style={[
                   styles.filterButtonText,
-                  activeFilter === filter.type && styles.filterButtonTextActive,
+                  {
+                    color:
+                      activeFilter === filter.type
+                        ? theme.theme.surface
+                        : theme.theme.primary,
+                  },
                 ]}
               >
                 {filter.label}
@@ -81,13 +103,21 @@ export default function FiltersAndSort({
       </View>
 
       {/* Sort Button */}
-      <View style={styles.sortSection}>
+      <View
+        style={[
+          styles.sortSection,
+          {
+            backgroundColor: theme.theme.surface,
+            borderTopColor: theme.theme.border,
+          },
+        ]}
+      >
         <TouchableOpacity
           style={styles.sortButton}
           onPress={() => setShowSortMenu(true)}
         >
-          <FontAwesome name="sort" size={16} color="#007AFF" />
-          <Text style={styles.sortButtonText}>
+          <FontAwesome name="sort" size={16} color={theme.theme.primary} />
+          <Text style={[styles.sortButtonText, { color: theme.theme.primary }]}>
             Trier {activeSort && `par ${activeSort}`}
           </Text>
         </TouchableOpacity>
@@ -105,13 +135,17 @@ export default function FiltersAndSort({
           activeOpacity={1}
           onPress={() => setShowSortMenu(false)}
         >
-          <View style={styles.sortMenu}>
+          <View
+            style={[styles.sortMenu, { backgroundColor: theme.theme.surface }]}
+          >
             {sorts.map((sort) => (
               <TouchableOpacity
                 key={sort.type}
                 style={[
                   styles.sortMenuItem,
-                  activeSort === sort.type && styles.sortMenuItemActive,
+                  activeSort === sort.type && {
+                    backgroundColor: theme.theme.background,
+                  },
                 ]}
                 onPress={() => {
                   onSort(sort.type);
@@ -121,13 +155,21 @@ export default function FiltersAndSort({
                 <Text
                   style={[
                     styles.sortMenuItemText,
-                    activeSort === sort.type && styles.sortMenuItemTextActive,
+                    { color: theme.theme.text },
+                    activeSort === sort.type && {
+                      fontWeight: "600",
+                      color: theme.theme.primary,
+                    },
                   ]}
                 >
                   {sort.label}
                 </Text>
                 {activeSort === sort.type && (
-                  <FontAwesome name="check" size={16} color="#007AFF" />
+                  <FontAwesome
+                    name="check"
+                    size={16}
+                    color={theme.theme.primary}
+                  />
                 )}
               </TouchableOpacity>
             ))}
@@ -140,9 +182,7 @@ export default function FiltersAndSort({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
   },
   filtersSection: {
     paddingVertical: 8,
@@ -159,25 +199,15 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#007AFF",
-    backgroundColor: "#fff",
-  },
-  filterButtonActive: {
-    backgroundColor: "#007AFF",
   },
   filterButtonText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#007AFF",
-  },
-  filterButtonTextActive: {
-    color: "#fff",
   },
   sortSection: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
   },
   sortButton: {
     flexDirection: "row",
@@ -188,7 +218,6 @@ const styles = StyleSheet.create({
   },
   sortButtonText: {
     fontSize: 14,
-    color: "#007AFF",
     fontWeight: "500",
   },
   modalOverlay: {
@@ -197,7 +226,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   sortMenu: {
-    backgroundColor: "#fff",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     paddingVertical: 12,
@@ -209,15 +237,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
   },
-  sortMenuItemActive: {
-    backgroundColor: "#f5f5f5",
-  },
   sortMenuItemText: {
     fontSize: 16,
-    color: "#333",
-  },
-  sortMenuItemTextActive: {
-    fontWeight: "600",
-    color: "#007AFF",
   },
 });

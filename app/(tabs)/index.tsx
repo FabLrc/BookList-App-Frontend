@@ -11,6 +11,7 @@ import {
 import BookCard from "../../components/BookCard";
 import FiltersAndSort from "../../components/FiltersAndSort";
 import SearchBar from "../../components/SearchBar";
+import { useTheme } from "../../context/ThemeContext";
 import api from "../../services/api";
 import { Book } from "../../types/book";
 
@@ -18,6 +19,7 @@ type FilterType = "all" | "read" | "unread" | "favorite";
 type SortType = "title" | "author" | "theme";
 
 export default function HomeScreen() {
+  const theme = useTheme();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,22 +125,28 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007AFF" />
+      <View
+        style={[styles.centered, { backgroundColor: theme.theme.background }]}
+      >
+        <ActivityIndicator size="large" color={theme.theme.primary} />
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View
+        style={[styles.centered, { backgroundColor: theme.theme.background }]}
+      >
+        <Text style={{ color: theme.theme.error }}>{error}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { backgroundColor: theme.theme.background }]}
+    >
       <SearchBar onSearch={handleSearch} searching={searching} />
       <FiltersAndSort
         onFilter={handleFilter}
@@ -149,8 +157,12 @@ export default function HomeScreen() {
 
       {books.length === 0 && !loading && !searching && (
         <View style={styles.emptyState}>
-          <FontAwesome name="inbox" size={48} color="#ccc" />
-          <Text style={styles.emptyText}>
+          <FontAwesome
+            name="inbox"
+            size={48}
+            color={theme.theme.textSecondary}
+          />
+          <Text style={{ color: theme.theme.textSecondary }}>
             {searchQuery
               ? "Aucun livre trouvé"
               : "Aucun livre dans votre bibliothèque"}
@@ -177,7 +189,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
   list: {
     padding: 16,
@@ -192,14 +203,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 16,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#999",
-    textAlign: "center",
-  },
-  errorText: {
-    color: "#d32f2f",
-    fontSize: 16,
   },
 });

@@ -1,16 +1,28 @@
 import { Tabs } from "expo-router";
 import { StyleSheet } from "react-native";
+import { useTheme } from "../../context/ThemeContext";
 import { getTabBarIcon, getTabBarLabel } from "../../utils/tabBarUtils";
 
 export default function TabsLayout() {
+  const { theme } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#007AFF",
-        tabBarInactiveTintColor: "#999",
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.textTertiary,
         tabBarShowLabel: true,
         headerShown: true,
         headerTitleStyle: styles.headerTitle,
+        headerStyle: {
+          backgroundColor: theme.surface,
+        },
+        headerTintColor: theme.text,
+        headerShadowVisible: false,
+        tabBarStyle: {
+          backgroundColor: theme.surface,
+          borderTopColor: theme.border,
+        },
       }}
     >
       <Tabs.Screen
@@ -41,6 +53,14 @@ export default function TabsLayout() {
         options={{
           title: "Détails du Livre",
           href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Paramètres",
+          tabBarLabel: getTabBarLabel("settings"),
+          tabBarIcon: ({ color }) => getTabBarIcon("settings", color, 24),
         }}
       />
     </Tabs>

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -17,6 +18,7 @@ export default function SearchBar({
   onSearch,
   searching = false,
 }: SearchBarProps) {
+  const theme = useTheme();
   const [query, setQuery] = useState("");
 
   const handleChangeText = (text: string) => {
@@ -30,23 +32,46 @@ export default function SearchBar({
   };
 
   return (
-    <View style={styles.searchSection}>
-      <View style={styles.searchInputContainer}>
-        <FontAwesome name="search" size={18} color="#999" />
+    <View
+      style={[
+        styles.searchSection,
+        {
+          backgroundColor: theme.theme.surface,
+          borderBottomColor: theme.theme.border,
+        },
+      ]}
+    >
+      <View
+        style={[
+          styles.searchInputContainer,
+          { backgroundColor: theme.theme.background },
+        ]}
+      >
+        <FontAwesome
+          name="search"
+          size={18}
+          color={theme.theme.textSecondary}
+        />
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { color: theme.theme.text }]}
           placeholder="Rechercher par titre ou auteur..."
-          placeholderTextColor="#ccc"
+          placeholderTextColor={theme.theme.textSecondary}
           value={query}
           onChangeText={handleChangeText}
         />
         {query.length > 0 && (
           <TouchableOpacity onPress={handleClear}>
-            <FontAwesome name="times-circle" size={18} color="#999" />
+            <FontAwesome
+              name="times-circle"
+              size={18}
+              color={theme.theme.textSecondary}
+            />
           </TouchableOpacity>
         )}
       </View>
-      {searching && <ActivityIndicator size="small" color="#007AFF" />}
+      {searching && (
+        <ActivityIndicator size="small" color={theme.theme.primary} />
+      )}
     </View>
   );
 }
@@ -55,9 +80,7 @@ const styles = StyleSheet.create({
   searchSection: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
@@ -66,7 +89,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -75,6 +97,5 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 14,
-    color: "#333",
   },
 });

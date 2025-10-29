@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -184,6 +185,10 @@ export default function BookDetailsScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      {book.cover && (
+        <Image source={{ uri: book.cover }} style={styles.coverHeader} />
+      )}
+
       <View style={styles.content}>
         <View style={styles.titleSection}>
           <Text style={styles.title}>{book.name}</Text>
@@ -362,6 +367,11 @@ const styles = StyleSheet.create({
   errorText: {
     color: "#d32f2f",
     fontSize: 16,
+  },
+  coverHeader: {
+    width: "100%",
+    height: 200,
+    resizeMode: "cover",
   },
   content: {
     padding: 16,

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 import api from "../services/api";
 import { Book, Note } from "../types/book";
 import StarRating from "./StarRating";
@@ -20,6 +21,7 @@ interface BookCardProps {
 }
 
 export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
+  const theme = useTheme();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [notesCount, setNotesCount] = useState(0);
@@ -106,7 +108,7 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[styles.card, { backgroundColor: theme.theme.surface }]}
       onPress={handleViewDetails}
       activeOpacity={0.7}
     >
@@ -116,8 +118,21 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
           {book.cover ? (
             <Image source={{ uri: book.cover }} style={styles.image} />
           ) : (
-            <View style={styles.imagePlaceholder}>
-              <Text style={styles.placeholderText}>?</Text>
+            <View
+              style={[
+                styles.imagePlaceholder,
+                { backgroundColor: theme.theme.background },
+              ]}
+            >
+              <Text
+                style={{
+                  color: theme.theme.textSecondary,
+                  fontSize: 32,
+                  fontWeight: "bold",
+                }}
+              >
+                ?
+              </Text>
             </View>
           )}
           <TouchableOpacity
@@ -137,29 +152,68 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
 
         {/* Info Section */}
         <View style={styles.infoSection}>
-          <Text style={styles.title} numberOfLines={2}>
+          <Text
+            style={[styles.title, { color: theme.theme.text }]}
+            numberOfLines={2}
+          >
             {book.name}
           </Text>
-          <Text style={styles.author} numberOfLines={1}>
+          <Text
+            style={[styles.author, { color: theme.theme.textSecondary }]}
+            numberOfLines={1}
+          >
             {book.author}
           </Text>
 
           <View style={styles.detailsRow}>
             <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Année</Text>
-              <Text style={styles.detailValue}>{book.year}</Text>
+              <Text
+                style={[
+                  styles.detailLabel,
+                  { color: theme.theme.textSecondary },
+                ]}
+              >
+                Année
+              </Text>
+              <Text style={[styles.detailValue, { color: theme.theme.text }]}>
+                {book.year}
+              </Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Thème</Text>
-              <Text style={styles.detailValue} numberOfLines={1}>
+              <Text
+                style={[
+                  styles.detailLabel,
+                  { color: theme.theme.textSecondary },
+                ]}
+              >
+                Thème
+              </Text>
+              <Text
+                style={[styles.detailValue, { color: theme.theme.text }]}
+                numberOfLines={1}
+              >
                 {book.theme}
               </Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Note</Text>
+              <Text
+                style={[
+                  styles.detailLabel,
+                  { color: theme.theme.textSecondary },
+                ]}
+              >
+                Note
+              </Text>
               <View style={styles.ratingContainer}>
                 <StarRating rating={book.rating} size={14} />
-                <Text style={styles.ratingText}>({notesCount})</Text>
+                <Text
+                  style={[
+                    styles.ratingText,
+                    { color: theme.theme.textSecondary },
+                  ]}
+                >
+                  ({notesCount})
+                </Text>
               </View>
             </View>
           </View>
@@ -169,19 +223,23 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
               style={[
                 styles.statusBadge,
                 {
-                  backgroundColor: book.read ? "#e8f5e9" : "#ffebee",
+                  backgroundColor: book.read
+                    ? theme.theme.success + "20"
+                    : theme.theme.error + "20",
                 },
               ]}
             >
               <FontAwesome
                 name={book.read ? "check-circle" : "circle-o"}
                 size={14}
-                color={book.read ? "#4caf50" : "#f44336"}
+                color={book.read ? theme.theme.success : theme.theme.error}
               />
               <Text
                 style={[
                   styles.statusText,
-                  { color: book.read ? "#4caf50" : "#f44336" },
+                  {
+                    color: book.read ? theme.theme.success : theme.theme.error,
+                  },
                 ]}
               >
                 {book.read ? "Lu" : "Non lu"}
@@ -192,9 +250,15 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
       </View>
 
       {/* Actions Section */}
-      <View style={styles.actionsSection}>
+      <View
+        style={[styles.actionsSection, { borderTopColor: theme.theme.border }]}
+      >
         <TouchableOpacity
-          style={[styles.actionButton, book.read && styles.actionButtonActive]}
+          style={[
+            styles.actionButton,
+            { borderRightColor: theme.theme.border },
+            book.read && { backgroundColor: theme.theme.background },
+          ]}
           onPress={(e) => {
             e.stopPropagation?.();
             handleToggleRead();
@@ -204,17 +268,20 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
           <FontAwesome
             name={book.read ? "check-circle" : "circle-o"}
             size={16}
-            color={book.read ? "#4caf50" : "#999"}
+            color={book.read ? theme.theme.success : theme.theme.textSecondary}
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.actionButton}
+          style={[
+            styles.actionButton,
+            { borderRightColor: theme.theme.border },
+          ]}
           onPress={(e) => {
             e.stopPropagation?.();
             handleEdit();
           }}
         >
-          <FontAwesome name="pencil" size={16} color="#007AFF" />
+          <FontAwesome name="pencil" size={16} color={theme.theme.primary} />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionButton}
@@ -223,7 +290,7 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
             handleDelete();
           }}
         >
-          <FontAwesome name="trash" size={16} color="#d32f2f" />
+          <FontAwesome name="trash" size={16} color={theme.theme.error} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -233,7 +300,6 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
 const styles = StyleSheet.create({
   card: {
     flexDirection: "column",
-    backgroundColor: "#fff",
     borderRadius: 12,
     marginBottom: 12,
     shadowColor: "#000",
@@ -255,20 +321,13 @@ const styles = StyleSheet.create({
     width: 70,
     height: 105,
     borderRadius: 6,
-    backgroundColor: "#e0e0e0",
   },
   imagePlaceholder: {
     width: 70,
     height: 105,
     borderRadius: 6,
-    backgroundColor: "#e0e0e0",
     justifyContent: "center",
     alignItems: "center",
-  },
-  placeholderText: {
-    fontSize: 32,
-    color: "#999",
-    fontWeight: "bold",
   },
   favoriteButtonFixed: {
     position: "absolute",
@@ -289,11 +348,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 2,
-    color: "#333",
   },
   author: {
     fontSize: 13,
-    color: "#666",
     marginBottom: 8,
   },
   detailsRow: {
@@ -306,14 +363,12 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 10,
-    color: "#999",
     textTransform: "uppercase",
     fontWeight: "600",
     marginBottom: 2,
   },
   detailValue: {
     fontSize: 13,
-    color: "#333",
     fontWeight: "500",
   },
   statusSection: {
@@ -339,12 +394,10 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 12,
-    color: "#666",
   },
   actionsSection: {
     flexDirection: "row",
     borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
     paddingTop: 0,
   },
   actionButton: {
@@ -353,48 +406,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRightWidth: 1,
-    borderRightColor: "#f0f0f0",
-  },
-  actionButtonActive: {
-    backgroundColor: "#f0f8f0",
-  },
-  meta: {
-    fontSize: 11,
-    color: "#999",
-  },
-  metaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 6,
-    gap: 4,
-  },
-  statusRow: {
-    marginTop: 4,
-  },
-  status: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  year: {
-    fontSize: 12,
-    color: "#999",
-  },
-  actions: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  info: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  titleRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 8,
-  },
-  favoriteButton: {
-    padding: 4,
-    marginLeft: 8,
   },
 });
