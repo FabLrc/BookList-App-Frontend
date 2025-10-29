@@ -15,6 +15,7 @@ import {
 import StarRating from "../../components/StarRating";
 import { useTheme } from "../../context/ThemeContext";
 import { hybridApi } from "../../services/hybridApi";
+import { openLibraryService } from "../../services/openLibraryApi";
 import { Book, Note } from "../../types/book";
 
 export default function BookDetailsScreen() {
@@ -28,6 +29,8 @@ export default function BookDetailsScreen() {
   const [showNoteForm, setShowNoteForm] = useState(false);
   const [noteContent, setNoteContent] = useState("");
   const [addingNote, setAddingNote] = useState(false);
+  const [editionCount, setEditionCount] = useState<number | null>(null);
+  const [loadingEditions, setLoadingEditions] = useState(false);
 
   const fetchBook = useCallback(async () => {
     if (!bookId) {
@@ -60,12 +63,30 @@ export default function BookDetailsScreen() {
     }
   }, [bookId]);
 
+  const fetchEditions = useCallback(async (bookName: string) => {
+    try {
+      setLoadingEditions(true);
+      const count = await openLibraryService.searchByTitle(bookName);
+      setEditionCount(count);
+    } catch (err) {
+      console.error("Erreur lors de la recherche OpenLibrary:", err);
+    } finally {
+      setLoadingEditions(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (bookId) {
       fetchBook();
       fetchNotes();
     }
   }, [bookId, fetchBook, fetchNotes]);
+
+  useEffect(() => {
+    if (book?.name) {
+      fetchEditions(book.name);
+    }
+  }, [book?.name, fetchEditions]);
 
   const handleAddNote = async () => {
     if (!noteContent.trim()) {
@@ -246,6 +267,17 @@ export default function BookDetailsScreen() {
               {book.read ? "Lu" : "Non lu"}
             </Text>
           </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.label}>Nombre d'éditions référencées</Text>
+          {loadingEditions ? (
+            <ActivityIndicator size="small" color="#007AFF" />
+          ) : editionCount !== null ? (
+            <Text style={styles.value}>{editionCount}</Text>
+          ) : (
+            <Text style={styles.value}>Non disponible</Text>
+          )}
         </View>
 
         <View style={styles.actionsSection}>
