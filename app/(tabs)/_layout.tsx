@@ -36,6 +36,13 @@ export default function TabsLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="details"
+        options={{
+          title: "Détails du Livre",
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

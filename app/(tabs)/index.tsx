@@ -40,6 +40,10 @@ export default function HomeScreen() {
     fetchBooks();
   };
 
+  const handleBookUpdated = () => {
+    fetchBooks();
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -62,7 +66,11 @@ export default function HomeScreen() {
         data={books}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <BookCard book={item} onDelete={handleBookDeleted} />
+          <BookCard
+            book={item}
+            onDelete={handleBookDeleted}
+            onUpdate={handleBookUpdated}
+          />
         )}
         contentContainerStyle={styles.list}
       />
