@@ -1,11 +1,54 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import api from "../services/api";
 import { Book } from "../types/book";
 
 interface BookCardProps {
   book: Book;
+  onDelete?: () => void;
 }
 
-export default function BookCard({ book }: BookCardProps) {
+export default function BookCard({ book, onDelete }: BookCardProps) {
+  const router = useRouter();
+
+  const handleEdit = () => {
+    router.push({
+      pathname: "/(tabs)/edit",
+      params: { bookId: book.id },
+    });
+  };
+
+  const handleDelete = () => {
+    Alert.alert(
+      "Confirmer la suppression",
+      `Êtes-vous sûr de vouloir supprimer "${book.name}" ?`,
+      [
+        { text: "Annuler", onPress: () => {}, style: "cancel" },
+        {
+          text: "Supprimer",
+          onPress: async () => {
+            try {
+              await api.delete(`/books/${book.id}`);
+              onDelete?.();
+            } catch (err) {
+              Alert.alert("Erreur", "Impossible de supprimer le livre");
+              console.error(err);
+            }
+          },
+          style: "destructive",
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.card}>
       {book.cover ? (
@@ -19,6 +62,14 @@ export default function BookCard({ book }: BookCardProps) {
         <Text style={styles.title}>{book.name}</Text>
         <Text style={styles.author}>{book.author}</Text>
         <Text style={styles.year}>{book.year}</Text>
+      </View>
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.actionButton} onPress={handleEdit}>
+          <FontAwesome name="pencil" size={18} color="#007AFF" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={handleDelete}>
+          <FontAwesome name="trash" size={18} color="#d32f2f" />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -36,6 +87,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    alignItems: "center",
   },
   image: {
     width: 60,
@@ -59,7 +111,6 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     marginLeft: 12,
-    justifyContent: "center",
   },
   title: {
     fontSize: 16,
@@ -74,5 +125,12 @@ const styles = StyleSheet.create({
   year: {
     fontSize: 12,
     color: "#999",
+  },
+  actions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  actionButton: {
+    padding: 8,
   },
 });

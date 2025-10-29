@@ -29,6 +29,13 @@ export default function TabsLayout() {
           tabBarIcon: ({ color }) => getTabBarIcon("add", color, 24),
         }}
       />
+      <Tabs.Screen
+        name="edit"
+        options={{
+          title: "Modifier un Livre",
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -15,9 +16,11 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchBooks();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchBooks();
+    }, [])
+  );
 
   const fetchBooks = async () => {
     try {
@@ -31,6 +34,10 @@ export default function HomeScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBookDeleted = () => {
+    fetchBooks();
   };
 
   if (loading) {
@@ -54,7 +61,9 @@ export default function HomeScreen() {
       <FlatList
         data={books}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <BookCard book={item} />}
+        renderItem={({ item }) => (
+          <BookCard book={item} onDelete={handleBookDeleted} />
+        )}
         contentContainerStyle={styles.list}
       />
     </View>
