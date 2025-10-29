@@ -1,6 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,8 +11,11 @@ import {
 import BookCard from "../../components/BookCard";
 import FiltersAndSort from "../../components/FiltersAndSort";
 import SearchBar from "../../components/SearchBar";
+import SyncIndicator from "../../components/SyncIndicator";
+import SyncNotification from "../../components/SyncNotification";
+import { useNetwork } from "../../context/NetworkContext";
 import { useTheme } from "../../context/ThemeContext";
-import api from "../../services/api";
+import { hybridApi, setOnlineMode } from "../../services/hybridApi";
 import { Book } from "../../types/book";
 
 type FilterType = "all" | "read" | "unread" | "favorite";
@@ -20,6 +23,7 @@ type SortType = "title" | "author" | "theme";
 
 export default function HomeScreen() {
   const theme = useTheme();
+  const { isOnline, onSyncComplete } = useNetwork();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +31,18 @@ export default function HomeScreen() {
   const [searching, setSearching] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [activeSort, setActiveSort] = useState<SortType | undefined>(undefined);
+
+  useEffect(() => {
+    setOnlineMode(isOnline);
+  }, [isOnline]);
+
+  useEffect(() => {
+    // Enregistrer le callback de synchronisation
+    onSyncComplete(() => {
+      console.log("📱 Synchronisation terminée, actualisation de la liste");
+      fetchBooks(activeFilter, activeSort);
+    });
+  }, [activeFilter, activeSort, onSyncComplete]);
 
   useFocusEffect(
     useCallback(() => {
@@ -56,8 +72,8 @@ export default function HomeScreen() {
         params.sort = sort;
       }
 
-      const response = await api.get("/books", { params });
-      setBooks(response.data);
+      const data = await hybridApi.getBooks(params);
+      setBooks(data);
     } catch (err) {
       setError("Erreur lors du chargement des livres");
       console.error(err);
@@ -96,8 +112,8 @@ export default function HomeScreen() {
         params.sort = activeSort;
       }
 
-      const response = await api.get("/books", { params });
-      setBooks(response.data);
+      const data = await hybridApi.getBooks(params);
+      setBooks(data);
     } catch (err) {
       setError("Erreur lors de la recherche");
       console.error(err);
@@ -147,6 +163,7 @@ export default function HomeScreen() {
     <View
       style={[styles.container, { backgroundColor: theme.theme.background }]}
     >
+      <SyncNotification />
       <SearchBar onSearch={handleSearch} searching={searching} />
       <FiltersAndSort
         onFilter={handleFilter}
@@ -154,6 +171,7 @@ export default function HomeScreen() {
         activeFilter={activeFilter}
         activeSort={activeSort}
       />
+      <SyncIndicator />
 
       {books.length === 0 && !loading && !searching && (
         <View style={styles.emptyState}>

@@ -13,10 +13,12 @@ import {
   View,
 } from "react-native";
 import StarRating from "../../components/StarRating";
-import api from "../../services/api";
+import { useTheme } from "../../context/ThemeContext";
+import { hybridApi } from "../../services/hybridApi";
 import { Book, Note } from "../../types/book";
 
 export default function BookDetailsScreen() {
+  const theme = useTheme();
   const { bookId } = useLocalSearchParams();
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
@@ -37,8 +39,8 @@ export default function BookDetailsScreen() {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get(`/books/${bookId}`);
-      setBook(response.data);
+      const data = await hybridApi.getBook(Number(bookId));
+      setBook(data);
     } catch (err) {
       setError("Erreur lors du chargement du livre");
       console.error(err);
@@ -51,8 +53,8 @@ export default function BookDetailsScreen() {
     if (!bookId) return;
 
     try {
-      const response = await api.get(`/books/${bookId}/notes`);
-      setNotes(response.data || []);
+      const data = await hybridApi.getNotes(Number(bookId));
+      setNotes(data || []);
     } catch (err) {
       console.error("Erreur lors du chargement des commentaires:", err);
     }
@@ -73,7 +75,7 @@ export default function BookDetailsScreen() {
 
     try {
       setAddingNote(true);
-      await api.post(`/books/${bookId}/notes`, { content: noteContent });
+      await hybridApi.addNote(Number(bookId), noteContent);
       Alert.alert("Succès", "Commentaire ajouté");
       setNoteContent("");
       setShowNoteForm(false);
@@ -96,7 +98,7 @@ export default function BookDetailsScreen() {
           text: "Supprimer",
           onPress: async () => {
             try {
-              await api.delete(`/books/${bookId}/notes/${noteId}`);
+              await hybridApi.deleteNote(Number(bookId), noteId);
               await fetchNotes();
             } catch (err) {
               Alert.alert("Erreur", "Impossible de supprimer le commentaire");
@@ -119,8 +121,7 @@ export default function BookDetailsScreen() {
   const handleToggleRead = async () => {
     if (!book) return;
     try {
-      await api.put(`/books/${book.id}`, {
-        ...book,
+      await hybridApi.updateBook(book.id, {
         read: !book.read,
       });
       setBook({ ...book, read: !book.read });
@@ -133,8 +134,7 @@ export default function BookDetailsScreen() {
   const handleToggleFavorite = async () => {
     if (!book) return;
     try {
-      await api.put(`/books/${book.id}`, {
-        ...book,
+      await hybridApi.updateBook(book.id, {
         favorite: !book.favorite,
       });
       setBook({ ...book, favorite: !book.favorite });
@@ -154,7 +154,9 @@ export default function BookDetailsScreen() {
           text: "Supprimer",
           onPress: async () => {
             try {
-              await api.delete(`/books/${book?.id}`);
+              if (book?.id) {
+                await hybridApi.deleteBook(book.id);
+              }
               router.back();
             } catch (err) {
               Alert.alert("Erreur", "Impossible de supprimer le livre");

@@ -8,10 +8,12 @@ import {
   View,
 } from "react-native";
 import BookForm from "../../components/BookForm";
-import api from "../../services/api";
+import { useTheme } from "../../context/ThemeContext";
+import { hybridApi } from "../../services/hybridApi";
 import { Book } from "../../types/book";
 
 export default function EditBookScreen() {
+  const theme = useTheme();
   const { bookId } = useLocalSearchParams();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,9 +30,9 @@ export default function EditBookScreen() {
       setLoading(true);
       setError(null);
       console.log("Fetching book with ID:", bookId);
-      const response = await api.get(`/books/${bookId}`);
-      console.log("Book data received:", response.data);
-      setBook(response.data);
+      const data = await hybridApi.getBook(Number(bookId));
+      console.log("Book data received:", data);
+      setBook(data);
     } catch (err) {
       setError("Erreur lors du chargement du livre");
       console.error("Error fetching book:", err);
@@ -47,22 +49,30 @@ export default function EditBookScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007AFF" />
+      <View
+        style={[styles.centered, { backgroundColor: theme.theme.background }]}
+      >
+        <ActivityIndicator size="large" color={theme.theme.primary} />
       </View>
     );
   }
 
   if (error || !book) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{error || "Livre introuvable"}</Text>
+      <View
+        style={[styles.centered, { backgroundColor: theme.theme.background }]}
+      >
+        <Text style={{ color: theme.theme.error }}>
+          {error || "Livre introuvable"}
+        </Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.theme.background }]}
+    >
       <BookForm book={book} />
     </ScrollView>
   );
@@ -71,7 +81,6 @@ export default function EditBookScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
   centered: {
     flex: 1,

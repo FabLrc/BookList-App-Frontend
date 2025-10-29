@@ -1,4 +1,6 @@
 import { ScrollView, StyleSheet, View } from "react-native";
+import OfflineToggle from "../../components/OfflineToggle";
+import SyncStats from "../../components/SyncStats";
 import ThemeToggle from "../../components/ThemeToggle";
 import { useTheme } from "../../context/ThemeContext";
 
@@ -11,6 +13,12 @@ export default function SettingsScreen() {
     >
       <View style={styles.section}>
         <ThemeToggle />
+      </View>
+      <View style={styles.section}>
+        <OfflineToggle />
+      </View>
+      <View style={styles.section}>
+        <SyncStats />
       </View>
     </ScrollView>
   );

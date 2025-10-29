@@ -10,8 +10,8 @@ import {
   View,
 } from "react-native";
 import { useTheme } from "../context/ThemeContext";
-import api from "../services/api";
-import { Book, Note } from "../types/book";
+import { hybridApi } from "../services/hybridApi";
+import { Book } from "../types/book";
 import StarRating from "./StarRating";
 
 interface BookCardProps {
@@ -28,8 +28,8 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
 
   const fetchNotesCount = useCallback(async () => {
     try {
-      const response = await api.get(`/books/${book.id}/notes`);
-      setNotesCount((response.data as Note[])?.length || 0);
+      const notes = await hybridApi.getNotes(book.id);
+      setNotesCount(notes?.length || 0);
     } catch (err) {
       console.error("Erreur lors du chargement des commentaires:", err);
     }
@@ -56,8 +56,7 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
   const handleToggleRead = async () => {
     try {
       setIsLoading(true);
-      await api.put(`/books/${book.id}`, {
-        ...book,
+      await hybridApi.updateBook(book.id, {
         read: !book.read,
       });
       onUpdate?.();
@@ -71,8 +70,7 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
 
   const handleToggleFavorite = async () => {
     try {
-      await api.put(`/books/${book.id}`, {
-        ...book,
+      await hybridApi.updateBook(book.id, {
         favorite: !book.favorite,
       });
       onUpdate?.();
@@ -93,7 +91,7 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
           text: "Supprimer",
           onPress: async () => {
             try {
-              await api.delete(`/books/${book.id}`);
+              await hybridApi.deleteBook(book.id);
               onDelete?.();
             } catch (err) {
               Alert.alert("Erreur", "Impossible de supprimer le livre");

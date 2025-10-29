@@ -14,7 +14,7 @@ import {
   View,
 } from "react-native";
 import { useTheme } from "../context/ThemeContext";
-import api from "../services/api";
+import { hybridApi } from "../services/hybridApi";
 import { Book } from "../types/book";
 
 interface BookFormProps {
@@ -68,7 +68,7 @@ export default function BookForm({ book }: BookFormProps) {
   };
 
   const handleSubmit = async () => {
-    if (!name || !author || !editor || !year || !theme) {
+    if (!name || !author || !editor || !year || !themeValue) {
       Alert.alert("Erreur", "Veuillez remplir tous les champs obligatoires");
       return;
     }
@@ -88,10 +88,10 @@ export default function BookForm({ book }: BookFormProps) {
       };
 
       if (book) {
-        await api.put(`/books/${book.id}`, bookData);
+        await hybridApi.updateBook(book.id, bookData);
         Alert.alert("Succès", "Livre modifié avec succès");
       } else {
-        await api.post("/books", bookData);
+        await hybridApi.createBook(bookData);
         Alert.alert("Succès", "Livre ajouté avec succès");
       }
 
