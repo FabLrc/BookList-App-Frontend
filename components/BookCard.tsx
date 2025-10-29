@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import api from "../services/api";
 import { Book, Note } from "../types/book";
+import StarRating from "./StarRating";
 
 interface BookCardProps {
   book: Book;
@@ -156,9 +157,10 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
             </View>
             <View style={styles.detailItem}>
               <Text style={styles.detailLabel}>Note</Text>
-              <Text style={styles.detailValue}>
-                {book.rating}/5 ({notesCount})
-              </Text>
+              <View style={styles.ratingContainer}>
+                <StarRating rating={book.rating} size={14} />
+                <Text style={styles.ratingText}>({notesCount})</Text>
+              </View>
             </View>
           </View>
 
@@ -329,6 +331,15 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontWeight: "600",
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  ratingText: {
+    fontSize: 12,
+    color: "#666",
   },
   actionsSection: {
     flexDirection: "row",

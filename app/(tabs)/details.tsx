@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import StarRating from "../../components/StarRating";
 import api from "../../services/api";
 import { Book, Note } from "../../types/book";
 
@@ -222,7 +223,10 @@ export default function BookDetailsScreen() {
         <View style={styles.rowSection}>
           <View style={styles.halfSection}>
             <Text style={styles.label}>Note</Text>
-            <Text style={styles.value}>{book.rating}/5</Text>
+            <View style={styles.ratingSection}>
+              <StarRating rating={book.rating} size={16} />
+              <Text style={styles.ratingValue}>{book.rating}/5</Text>
+            </View>
           </View>
           <View style={styles.halfSection}>
             <Text style={styles.label}>Statut</Text>
@@ -405,6 +409,16 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     color: "#333",
+    fontWeight: "500",
+  },
+  ratingSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  ratingValue: {
+    fontSize: 14,
+    color: "#666",
     fontWeight: "500",
   },
   actionsSection: {
