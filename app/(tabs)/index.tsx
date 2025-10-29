@@ -9,9 +9,13 @@ import {
   View,
 } from "react-native";
 import BookCard from "../../components/BookCard";
+import FiltersAndSort from "../../components/FiltersAndSort";
 import SearchBar from "../../components/SearchBar";
 import api from "../../services/api";
 import { Book } from "../../types/book";
+
+type FilterType = "all" | "read" | "unread" | "favorite";
+type SortType = "title" | "author" | "theme";
 
 export default function HomeScreen() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -19,18 +23,38 @@ export default function HomeScreen() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [activeSort, setActiveSort] = useState<SortType | undefined>(undefined);
 
   useFocusEffect(
     useCallback(() => {
-      fetchBooks();
-    }, [])
+      fetchBooks(activeFilter, activeSort);
+    }, [activeFilter, activeSort])
   );
 
-  const fetchBooks = async () => {
+  const fetchBooks = async (filter?: FilterType, sort?: SortType) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get("/books");
+      const params: Record<string, string | boolean> = {};
+
+      // Ajouter le filtre
+      if (filter && filter !== "all") {
+        if (filter === "read") {
+          params.read = true;
+        } else if (filter === "unread") {
+          params.read = false;
+        } else if (filter === "favorite") {
+          params.favorite = true;
+        }
+      }
+
+      // Ajouter le tri
+      if (sort) {
+        params.sort = sort;
+      }
+
+      const response = await api.get("/books", { params });
       setBooks(response.data);
     } catch (err) {
       setError("Erreur lors du chargement des livres");
@@ -44,19 +68,33 @@ export default function HomeScreen() {
     setSearchQuery(query);
 
     if (!query.trim()) {
-      // Si la recherche est vide, recharger tous les livres
-      fetchBooks();
+      // Si la recherche est vide, recharger avec les filtres actuels
+      fetchBooks(activeFilter, activeSort);
       return;
     }
 
     try {
       setSearching(true);
       setError(null);
-      const response = await api.get("/books", {
-        params: {
-          q: query,
-        },
-      });
+      const params: Record<string, string | boolean> = { q: query };
+
+      // Ajouter le filtre même en recherche
+      if (activeFilter && activeFilter !== "all") {
+        if (activeFilter === "read") {
+          params.read = true;
+        } else if (activeFilter === "unread") {
+          params.read = false;
+        } else if (activeFilter === "favorite") {
+          params.favorite = true;
+        }
+      }
+
+      // Ajouter le tri même en recherche
+      if (activeSort) {
+        params.sort = activeSort;
+      }
+
+      const response = await api.get("/books", { params });
       setBooks(response.data);
     } catch (err) {
       setError("Erreur lors de la recherche");
@@ -66,12 +104,21 @@ export default function HomeScreen() {
     }
   };
 
+  const handleFilter = (filter: FilterType) => {
+    setActiveFilter(filter);
+    setSearchQuery("");
+  };
+
+  const handleSort = (sort: SortType) => {
+    setActiveSort(sort);
+  };
+
   const handleBookDeleted = () => {
-    fetchBooks();
+    fetchBooks(activeFilter, activeSort);
   };
 
   const handleBookUpdated = () => {
-    fetchBooks();
+    fetchBooks(activeFilter, activeSort);
   };
 
   if (loading) {
@@ -93,6 +140,12 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <SearchBar onSearch={handleSearch} searching={searching} />
+      <FiltersAndSort
+        onFilter={handleFilter}
+        onSort={handleSort}
+        activeFilter={activeFilter}
+        activeSort={activeSort}
+      />
 
       {books.length === 0 && !loading && !searching && (
         <View style={styles.emptyState}>
