@@ -1,3 +1,4 @@
+import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import {
@@ -8,6 +9,7 @@ import {
   View,
 } from "react-native";
 import BookCard from "../../components/BookCard";
+import SearchBar from "../../components/SearchBar";
 import api from "../../services/api";
 import { Book } from "../../types/book";
 
@@ -15,6 +17,8 @@ export default function HomeScreen() {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searching, setSearching] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -33,6 +37,32 @@ export default function HomeScreen() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+
+    if (!query.trim()) {
+      // Si la recherche est vide, recharger tous les livres
+      fetchBooks();
+      return;
+    }
+
+    try {
+      setSearching(true);
+      setError(null);
+      const response = await api.get("/books", {
+        params: {
+          q: query,
+        },
+      });
+      setBooks(response.data);
+    } catch (err) {
+      setError("Erreur lors de la recherche");
+      console.error(err);
+    } finally {
+      setSearching(false);
     }
   };
 
@@ -62,6 +92,19 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <SearchBar onSearch={handleSearch} searching={searching} />
+
+      {books.length === 0 && !loading && !searching && (
+        <View style={styles.emptyState}>
+          <FontAwesome name="inbox" size={48} color="#ccc" />
+          <Text style={styles.emptyText}>
+            {searchQuery
+              ? "Aucun livre trouvé"
+              : "Aucun livre dans votre bibliothèque"}
+          </Text>
+        </View>
+      )}
+
       <FlatList
         data={books}
         keyExtractor={(item) => item.id.toString()}
@@ -90,6 +133,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#999",
+    textAlign: "center",
   },
   errorText: {
     color: "#d32f2f",
