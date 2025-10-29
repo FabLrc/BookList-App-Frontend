@@ -6,6 +6,8 @@ export function getTabBarIcon(name: string, color: string, size: number = 24) {
     return <FontAwesome name="book" size={size} color={color} />;
   } else if (name === "add") {
     return <FontAwesome name="plus" size={size} color={color} />;
+  } else if (name === "stats") {
+    return <FontAwesome name="bar-chart" size={size} color={color} />;
   } else if (name === "settings") {
     return <FontAwesome name="cog" size={size} color={color} />;
   }
@@ -17,6 +19,8 @@ export function getTabBarLabel(name: string) {
     return "Livres";
   } else if (name === "add") {
     return "Ajouter";
+  } else if (name === "stats") {
+    return "Stats";
   } else if (name === "settings") {
     return "Paramètres";
   }
