@@ -37,12 +37,12 @@ export default function HomeScreen() {
   }, [isOnline]);
 
   useEffect(() => {
-    // Enregistrer le callback de synchronisation
-    onSyncComplete(() => {
+    const handleSyncComplete = () => {
       console.log("📱 Synchronisation terminée, actualisation de la liste");
       fetchBooks(activeFilter, activeSort);
-    });
-  }, [activeFilter, activeSort, onSyncComplete]);
+    };
+    onSyncComplete(handleSyncComplete);
+  }, [activeFilter, activeSort]);
 
   useFocusEffect(
     useCallback(() => {

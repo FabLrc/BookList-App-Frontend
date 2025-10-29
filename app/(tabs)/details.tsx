@@ -86,7 +86,7 @@ export default function BookDetailsScreen() {
     if (book?.name) {
       fetchEditions(book.name);
     }
-  }, [book?.name, fetchEditions]);
+  }, [book?.name]);
 
   const handleAddNote = async () => {
     if (!noteContent.trim()) {

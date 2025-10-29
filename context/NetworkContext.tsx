@@ -1,5 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import api from "../services/api";
 import { storageService } from "../services/storage";
 
@@ -121,9 +127,9 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const onSyncComplete = (callback: () => void) => {
+  const onSyncComplete = useCallback((callback: () => void) => {
     setSyncCompleteCallback(() => callback);
-  };
+  }, []);
 
   return (
     <NetworkContext.Provider

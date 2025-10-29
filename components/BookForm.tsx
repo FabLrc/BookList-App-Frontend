@@ -1,4 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -55,7 +56,11 @@ export default function BookForm({ book }: BookFormProps) {
       });
 
       if (!result.canceled) {
-        setCover(result.assets[0].uri);
+        const imageUri = result.assets[0].uri;
+        const base64 = await FileSystem.readAsStringAsync(imageUri, {
+          encoding: "base64",
+        });
+        setCover(`data:image/jpeg;base64,${base64}`);
       }
     } catch (err) {
       Alert.alert("Erreur", "Impossible de sélectionner une image");
