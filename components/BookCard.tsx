@@ -1,6 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import api from "../services/api";
-import { Book } from "../types/book";
+import { Book, Note } from "../types/book";
 
 interface BookCardProps {
   book: Book;
@@ -21,6 +21,20 @@ interface BookCardProps {
 export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [notesCount, setNotesCount] = useState(0);
+
+  const fetchNotesCount = useCallback(async () => {
+    try {
+      const response = await api.get(`/books/${book.id}/notes`);
+      setNotesCount((response.data as Note[])?.length || 0);
+    } catch (err) {
+      console.error("Erreur lors du chargement des commentaires:", err);
+    }
+  }, [book.id]);
+
+  useEffect(() => {
+    fetchNotesCount();
+  }, [book.id, fetchNotesCount]);
 
   const handleViewDetails = () => {
     router.push({
@@ -142,7 +156,9 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
             </View>
             <View style={styles.detailItem}>
               <Text style={styles.detailLabel}>Note</Text>
-              <Text style={styles.detailValue}>{book.rating}/5</Text>
+              <Text style={styles.detailValue}>
+                {book.rating}/5 ({notesCount})
+              </Text>
             </View>
           </View>
 

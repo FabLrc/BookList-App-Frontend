@@ -1,32 +1,31 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import api from "../../services/api";
-import { Book } from "../../types/book";
+import { Book, Note } from "../../types/book";
 
 export default function BookDetailsScreen() {
   const { bookId } = useLocalSearchParams();
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showNoteForm, setShowNoteForm] = useState(false);
+  const [noteContent, setNoteContent] = useState("");
+  const [addingNote, setAddingNote] = useState(false);
 
-  useEffect(() => {
-    if (bookId) {
-      fetchBook();
-    }
-  }, [bookId]);
-
-  const fetchBook = async () => {
+  const fetchBook = useCallback(async () => {
     if (!bookId) {
       setError("ID du livre manquant");
       setLoading(false);
@@ -44,6 +43,68 @@ export default function BookDetailsScreen() {
     } finally {
       setLoading(false);
     }
+  }, [bookId]);
+
+  const fetchNotes = useCallback(async () => {
+    if (!bookId) return;
+
+    try {
+      const response = await api.get(`/books/${bookId}/notes`);
+      setNotes(response.data || []);
+    } catch (err) {
+      console.error("Erreur lors du chargement des commentaires:", err);
+    }
+  }, [bookId]);
+
+  useEffect(() => {
+    if (bookId) {
+      fetchBook();
+      fetchNotes();
+    }
+  }, [bookId, fetchBook, fetchNotes]);
+
+  const handleAddNote = async () => {
+    if (!noteContent.trim()) {
+      Alert.alert("Erreur", "Veuillez entrer un commentaire");
+      return;
+    }
+
+    try {
+      setAddingNote(true);
+      await api.post(`/books/${bookId}/notes`, { content: noteContent });
+      Alert.alert("Succès", "Commentaire ajouté");
+      setNoteContent("");
+      setShowNoteForm(false);
+      await fetchNotes();
+    } catch (err) {
+      Alert.alert("Erreur", "Impossible d'ajouter le commentaire");
+      console.error(err);
+    } finally {
+      setAddingNote(false);
+    }
+  };
+
+  const handleDeleteNote = (noteId: number) => {
+    Alert.alert(
+      "Confirmer la suppression",
+      "Êtes-vous sûr de vouloir supprimer ce commentaire ?",
+      [
+        { text: "Annuler", onPress: () => {}, style: "cancel" },
+        {
+          text: "Supprimer",
+          onPress: async () => {
+            try {
+              await api.delete(`/books/${bookId}/notes/${noteId}`);
+              await fetchNotes();
+            } catch (err) {
+              Alert.alert("Erreur", "Impossible de supprimer le commentaire");
+              console.error(err);
+            }
+          },
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   const handleEdit = () => {
@@ -207,6 +268,77 @@ export default function BookDetailsScreen() {
             <Text style={styles.actionButtonText}>Supprimer</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.notesSection}>
+          <Text style={styles.notesTitle}>Commentaires ({notes.length})</Text>
+
+          {notes.length > 0 ? (
+            <View style={styles.notesList}>
+              {notes.map((note) => (
+                <View key={note.id} style={styles.noteItem}>
+                  <Text style={styles.noteContent}>{note.content}</Text>
+                  <TouchableOpacity
+                    style={styles.deleteNoteButton}
+                    onPress={() => handleDeleteNote(note.id)}
+                  >
+                    <FontAwesome name="trash-o" size={16} color="#d32f2f" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <Text style={styles.noNotesText}>
+              Aucun commentaire pour le moment
+            </Text>
+          )}
+
+          {showNoteForm ? (
+            <View style={styles.noteForm}>
+              <TextInput
+                style={styles.noteInput}
+                placeholder="Ajouter un commentaire..."
+                placeholderTextColor="#999"
+                value={noteContent}
+                onChangeText={setNoteContent}
+                multiline
+                editable={!addingNote}
+              />
+              <View style={styles.noteFormButtons}>
+                <TouchableOpacity
+                  style={[styles.formButton, styles.cancelButton]}
+                  onPress={() => {
+                    setShowNoteForm(false);
+                    setNoteContent("");
+                  }}
+                  disabled={addingNote}
+                >
+                  <Text style={styles.formButtonText}>Annuler</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.formButton, styles.submitButton]}
+                  onPress={handleAddNote}
+                  disabled={addingNote}
+                >
+                  {addingNote ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={styles.formButtonText}>Ajouter</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.addNoteButton}
+              onPress={() => setShowNoteForm(true)}
+            >
+              <FontAwesome name="plus" size={18} color="#fff" />
+              <Text style={styles.addNoteButtonText}>
+                Ajouter un commentaire
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </ScrollView>
   );
@@ -229,6 +361,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    paddingBottom: 32,
   },
   titleSection: {
     flexDirection: "row",
@@ -277,6 +410,7 @@ const styles = StyleSheet.create({
   actionsSection: {
     marginTop: 24,
     gap: 12,
+    marginBottom: 24,
   },
   actionButton: {
     flexDirection: "row",
@@ -298,6 +432,98 @@ const styles = StyleSheet.create({
   actionButtonText: {
     color: "#fff",
     fontSize: 16,
+    fontWeight: "bold",
+  },
+  notesSection: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 8,
+  },
+  notesTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 16,
+  },
+  notesList: {
+    marginBottom: 16,
+    gap: 12,
+  },
+  noteItem: {
+    backgroundColor: "#f9f9f9",
+    padding: 12,
+    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  noteContent: {
+    flex: 1,
+    fontSize: 14,
+    color: "#333",
+    lineHeight: 20,
+  },
+  deleteNoteButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  noNotesText: {
+    fontSize: 14,
+    color: "#999",
+    fontStyle: "italic",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  noteForm: {
+    backgroundColor: "#f9f9f9",
+    padding: 12,
+    borderRadius: 8,
+    gap: 12,
+  },
+  noteInput: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    color: "#333",
+    minHeight: 80,
+    textAlignVertical: "top",
+  },
+  noteFormButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  formButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cancelButton: {
+    backgroundColor: "#ddd",
+  },
+  submitButton: {
+    backgroundColor: "#007AFF",
+  },
+  formButtonText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  addNoteButton: {
+    backgroundColor: "#007AFF",
+    padding: 12,
+    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+  },
+  addNoteButtonText: {
+    color: "#fff",
+    fontSize: 14,
     fontWeight: "bold",
   },
 });

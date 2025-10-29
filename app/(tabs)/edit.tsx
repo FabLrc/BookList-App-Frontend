@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -17,13 +17,7 @@ export default function EditBookScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (bookId) {
-      fetchBook();
-    }
-  }, [bookId]);
-
-  const fetchBook = async () => {
+  const fetchBook = useCallback(async () => {
     if (!bookId) {
       setError("ID du livre manquant");
       setLoading(false);
@@ -43,7 +37,13 @@ export default function EditBookScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [bookId]);
+
+  useEffect(() => {
+    if (bookId) {
+      fetchBook();
+    }
+  }, [bookId, fetchBook]);
 
   if (loading) {
     return (

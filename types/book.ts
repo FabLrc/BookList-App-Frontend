@@ -10,3 +10,8 @@ export interface Book {
   favorite: boolean;
   rating: number;
 }
+
+export interface Note {
+  id: number;
+  content: string;
+}
