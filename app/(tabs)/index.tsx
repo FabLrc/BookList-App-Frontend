@@ -1,4 +1,3 @@
-import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -10,6 +9,7 @@ import {
 } from "react-native";
 import BookCard from "../../components/BookCard";
 import FiltersAndSort from "../../components/FiltersAndSort";
+import Logo from "../../components/Logo";
 import SearchBar from "../../components/SearchBar";
 import SyncIndicator from "../../components/SyncIndicator";
 import SyncNotification from "../../components/SyncNotification";
@@ -145,7 +145,12 @@ export default function HomeScreen() {
       <View
         style={[styles.centered, { backgroundColor: theme.theme.background }]}
       >
-        <ActivityIndicator size="large" color={theme.theme.primary} />
+        <Logo size="medium" />
+        <ActivityIndicator
+          size="large"
+          color={theme.theme.primary}
+          style={styles.loader}
+        />
       </View>
     );
   }
@@ -176,15 +181,19 @@ export default function HomeScreen() {
 
       {books.length === 0 && !loading && !searching && (
         <View style={styles.emptyState}>
-          <FontAwesome
-            name="inbox"
-            size={48}
-            color={theme.theme.textSecondary}
-          />
-          <Text style={{ color: theme.theme.textSecondary }}>
+          <Logo size="large" />
+          <Text style={[styles.emptyStateTitle, { color: theme.theme.text }]}>
+            Bienvenue dans BookList
+          </Text>
+          <Text
+            style={[
+              styles.emptyStateSubtitle,
+              { color: theme.theme.textSecondary },
+            ]}
+          >
             {searchQuery
               ? "Aucun livre trouvé"
-              : "Aucun livre dans votre bibliothèque"}
+              : "Commencez à ajouter des livres à votre bibliothèque"}
           </Text>
         </View>
       )}
@@ -216,11 +225,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    gap: spacing.xl,
+  },
+  loader: {
+    marginTop: spacing.xl,
   },
   emptyState: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     gap: spacing.lg,
+    paddingHorizontal: spacing.xl,
+  },
+  emptyStateTitle: {
+    fontSize: 28,
+    fontWeight: "700",
+    textAlign: "center",
+    marginTop: spacing.lg,
+  },
+  emptyStateSubtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: spacing.sm,
+    lineHeight: 24,
   },
 });

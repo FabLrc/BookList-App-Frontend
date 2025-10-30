@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
+import Logo from "../../components/Logo";
 import { useTheme } from "../../context/ThemeContext";
 import { getTabBarIcon, getTabBarLabel } from "../../utils/tabBarUtils";
 
@@ -28,7 +29,11 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Mes Livres",
+          headerTitle: () => (
+            <View style={styles.headerTitleContainer}>
+              <Logo size="small" />
+            </View>
+          ),
           tabBarLabel: getTabBarLabel("index"),
           tabBarIcon: ({ color }) => getTabBarIcon("index", color, 24),
         }}
@@ -79,5 +84,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  headerTitleContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
