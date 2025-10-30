@@ -9,6 +9,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  borderRadius,
+  fontSize,
+  fontWeight,
+  iconSize,
+  spacing,
+} from "../constants/designSystem";
 import { useTheme } from "../context/ThemeContext";
 import { hybridApi } from "../services/hybridApi";
 import { Book } from "../types/book";
@@ -298,8 +305,8 @@ export default function BookCard({ book, onDelete, onUpdate }: BookCardProps) {
 const styles = StyleSheet.create({
   card: {
     flexDirection: "column",
-    borderRadius: 12,
-    marginBottom: 12,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.md,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -309,8 +316,8 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flexDirection: "row",
-    padding: 12,
-    gap: 12,
+    padding: spacing.md,
+    gap: spacing.md,
   },
   imageSection: {
     position: "relative",
@@ -318,23 +325,23 @@ const styles = StyleSheet.create({
   image: {
     width: 70,
     height: 105,
-    borderRadius: 6,
+    borderRadius: borderRadius.sm,
   },
   imagePlaceholder: {
     width: 70,
     height: 105,
-    borderRadius: 6,
+    borderRadius: borderRadius.sm,
     justifyContent: "center",
     alignItems: "center",
   },
   favoriteButtonFixed: {
     position: "absolute",
-    top: 6,
-    right: 6,
+    top: borderRadius.sm,
+    right: borderRadius.sm,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: 16,
-    width: 32,
-    height: 32,
+    borderRadius: borderRadius.lg,
+    width: iconSize.lg + spacing.sm,
+    height: iconSize.lg + spacing.sm,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -343,55 +350,55 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.bold,
     marginBottom: 2,
   },
   author: {
-    fontSize: 13,
-    marginBottom: 8,
+    fontSize: fontSize.sm + 1,
+    marginBottom: spacing.sm,
   },
   detailsRow: {
     flexDirection: "row",
-    gap: 8,
-    marginBottom: 8,
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
   },
   detailItem: {
     flex: 1,
   },
   detailLabel: {
-    fontSize: 10,
+    fontSize: fontSize.xs - 1,
     textTransform: "uppercase",
-    fontWeight: "600",
+    fontWeight: fontWeight.semiBold,
     marginBottom: 2,
   },
   detailValue: {
-    fontSize: 13,
-    fontWeight: "500",
+    fontSize: fontSize.sm + 1,
+    fontWeight: fontWeight.medium,
   },
   statusSection: {
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   statusBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 6,
+    gap: borderRadius.sm + 2,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: borderRadius.sm + 2,
+    borderRadius: borderRadius.sm,
     alignSelf: "flex-start",
   },
   statusText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semiBold,
   },
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: borderRadius.sm + 2,
   },
   ratingText: {
-    fontSize: 12,
+    fontSize: fontSize.sm,
   },
   actionsSection: {
     flexDirection: "row",
@@ -400,7 +407,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: spacing.xs + 6,
     justifyContent: "center",
     alignItems: "center",
     borderRightWidth: 1,

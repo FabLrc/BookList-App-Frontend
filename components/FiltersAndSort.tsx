@@ -8,6 +8,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  borderRadius,
+  fontSize,
+  fontWeight,
+  spacing,
+} from "../constants/designSystem";
 import { useTheme } from "../context/ThemeContext";
 
 type FilterType = "all" | "read" | "unread" | "favorite";
@@ -185,40 +191,40 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   filtersSection: {
-    paddingVertical: 8,
+    paddingVertical: spacing.sm,
   },
   filtersList: {
-    paddingHorizontal: 12,
-    gap: 8,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
   },
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
+    gap: borderRadius.sm + 2,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.round,
     borderWidth: 1,
   },
   filterButtonText: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semiBold,
   },
   sortSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderTopWidth: 1,
   },
   sortButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
   sortButtonText: {
-    fontSize: 14,
-    fontWeight: "500",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.medium,
   },
   modalOverlay: {
     flex: 1,
@@ -226,18 +232,18 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   sortMenu: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingVertical: 12,
+    borderTopLeftRadius: borderRadius.xl,
+    borderTopRightRadius: borderRadius.xl,
+    paddingVertical: spacing.md,
   },
   sortMenuItem: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
   },
   sortMenuItemText: {
-    fontSize: 16,
+    fontSize: fontSize.base,
   },
 });

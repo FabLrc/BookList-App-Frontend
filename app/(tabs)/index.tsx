@@ -13,6 +13,7 @@ import FiltersAndSort from "../../components/FiltersAndSort";
 import SearchBar from "../../components/SearchBar";
 import SyncIndicator from "../../components/SyncIndicator";
 import SyncNotification from "../../components/SyncNotification";
+import { spacing } from "../../constants/designSystem";
 import { useNetwork } from "../../context/NetworkContext";
 import { useTheme } from "../../context/ThemeContext";
 import { hybridApi, setOnlineMode } from "../../services/hybridApi";
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    padding: 16,
+    padding: spacing.lg,
   },
   centered: {
     flex: 1,
@@ -220,6 +221,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: 16,
+    gap: spacing.lg,
   },
 });

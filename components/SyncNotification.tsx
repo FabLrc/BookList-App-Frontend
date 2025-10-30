@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
+import {
+  borderRadius,
+  fontSize,
+  fontWeight,
+  spacing,
+} from "../constants/designSystem";
 import { useNetwork } from "../context/NetworkContext";
 import { useTheme } from "../context/ThemeContext";
 
@@ -73,18 +79,18 @@ export default function SyncNotification() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
   },
   notification: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
     borderWidth: 1,
   },
   text: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semiBold,
     textAlign: "center",
   },
 });

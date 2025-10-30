@@ -6,6 +6,12 @@ import {
   Text,
   View,
 } from "react-native";
+import {
+  borderRadius,
+  fontSize,
+  fontWeight,
+  spacing,
+} from "../constants/designSystem";
 import { useNetwork } from "../context/NetworkContext";
 import { useTheme } from "../context/ThemeContext";
 
@@ -63,30 +69,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 16,
-    borderRadius: 12,
+    padding: spacing.lg,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
   },
   left: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: spacing.md,
     flex: 1,
   },
   textContainer: {
     flex: 1,
   },
   label: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semiBold,
     marginBottom: 2,
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: fontSize.sm,
   },
   right: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
 });

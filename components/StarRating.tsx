@@ -1,5 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { View } from "react-native";
+import { spacing } from "../constants/designSystem";
 
 interface StarRatingProps {
   rating: number;
@@ -42,5 +43,5 @@ export default function StarRating({
     }
   }
 
-  return <View style={{ flexDirection: "row", gap: 4 }}>{stars}</View>;
+  return <View style={{ flexDirection: "row", gap: spacing.xs }}>{stars}</View>;
 }

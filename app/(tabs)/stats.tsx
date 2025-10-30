@@ -7,6 +7,12 @@ import {
   View,
 } from "react-native";
 import { BarChart, PieChart } from "react-native-chart-kit";
+import {
+  borderRadius,
+  fontSize,
+  fontWeight,
+  spacing,
+} from "../../constants/designSystem";
 import { useTheme } from "../../context/ThemeContext";
 import api from "../../services/api";
 
@@ -190,21 +196,21 @@ export default function StatsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: spacing.xs + 6,
   },
   scrollContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xl,
   },
   card: {
-    marginBottom: 16,
-    borderRadius: 12,
-    padding: 16,
+    marginBottom: spacing.lg,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 16,
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semiBold,
+    marginBottom: spacing.lg,
   },
   statsGrid: {
     flexDirection: "row",
@@ -214,11 +220,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   statValue: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 4,
+    fontSize: fontSize.xxxl - 4,
+    fontWeight: fontWeight.bold,
+    marginBottom: spacing.xs,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: fontSize.sm,
   },
 });

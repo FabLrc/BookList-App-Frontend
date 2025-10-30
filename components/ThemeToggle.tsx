@@ -1,5 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { StyleSheet, Switch, Text, View } from "react-native";
+import { fontSize, fontWeight, spacing } from "../constants/designSystem";
 import { useTheme } from "../context/ThemeContext";
 
 export default function ThemeToggle() {
@@ -32,16 +33,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   content: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: spacing.md,
   },
   label: {
-    fontSize: 16,
-    fontWeight: "500",
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.medium,
   },
 });

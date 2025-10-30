@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import OfflineToggle from "../../components/OfflineToggle";
 import SyncStats from "../../components/SyncStats";
 import ThemeToggle from "../../components/ThemeToggle";
+import { spacing } from "../../constants/designSystem";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function SettingsScreen() {
@@ -29,6 +30,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   section: {
-    marginVertical: 16,
+    marginVertical: spacing.lg,
   },
 });

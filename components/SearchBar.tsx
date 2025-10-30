@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { borderRadius, fontSize, spacing } from "../constants/designSystem";
 import { useTheme } from "../context/ThemeContext";
 
 interface SearchBarProps {
@@ -78,24 +79,24 @@ export default function SearchBar({
 
 const styles = StyleSheet.create({
   searchSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   searchInputContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    gap: 8,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: fontSize.md,
   },
 });

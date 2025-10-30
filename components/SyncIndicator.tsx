@@ -1,6 +1,12 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  borderRadius,
+  fontSize,
+  fontWeight,
+  spacing,
+} from "../constants/designSystem";
 import { useNetwork } from "../context/NetworkContext";
 import { useTheme } from "../context/ThemeContext";
 import { storageService } from "../services/storage";
@@ -72,23 +78,23 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderWidth: 1,
-    borderRadius: 8,
-    marginHorizontal: 16,
-    marginVertical: 8,
+    borderRadius: borderRadius.md,
+    marginHorizontal: spacing.lg,
+    marginVertical: spacing.sm,
   },
   textContainer: {
     flex: 1,
   },
   text: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semiBold,
   },
   hint: {
-    fontSize: 12,
+    fontSize: fontSize.sm,
     marginTop: 2,
   },
   spinning: {

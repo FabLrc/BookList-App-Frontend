@@ -1,6 +1,12 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import {
+  borderRadius,
+  fontSize,
+  fontWeight,
+  spacing,
+} from "../constants/designSystem";
 import { useTheme } from "../context/ThemeContext";
 import { storageService } from "../services/storage";
 
@@ -92,34 +98,34 @@ export default function SyncStats() {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
-    padding: 16,
+    padding: spacing.lg,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    marginBottom: 16,
+    gap: spacing.md,
+    marginBottom: spacing.lg,
   },
   title: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semiBold,
   },
   stats: {
-    gap: 12,
+    gap: spacing.md,
   },
   statItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   statLabel: {
     flex: 1,
-    fontSize: 14,
+    fontSize: fontSize.md,
   },
   statValue: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.bold,
   },
 });
