@@ -1,5 +1,16 @@
 # BookListApp - Frontend
 
+![BookList Logo](./assets/images/booklist_logo.png)
+
+<!-- Badges -->
+
+[![React Native](https://img.shields.io/badge/React%20Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-000000?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Axios](https://img.shields.io/badge/Axios-5C9DD8?style=for-the-badge&logo=axios&logoColor=white)](https://axios-http.com/)
+[![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)](https://eslint.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
+
 Une application mobile React Native pour gérer votre collection de livres avec style et facilité.
 
 ## 🎯 Fonctionnalités
